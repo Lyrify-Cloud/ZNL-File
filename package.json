@@ -1,0 +1,38 @@
+{
+  "name": "@lyrify/znl-plugin-fs",
+  "version": "0.1.2",
+  "description": "ZNL file management plugin with chunked transfer, CRUD, and patch support",
+  "type": "module",
+  "main": "./index.js",
+  "exports": {
+    ".": "./index.js"
+  },
+  "files": [
+    "index.js",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node test/integration.test.js",
+    "test:integration": "node test/integration.test.js",
+    "lint": "eslint .",
+    "format": "prettier . --check"
+  },
+  "keywords": [
+    "znl",
+    "zeromq",
+    "rpc",
+    "plugin",
+    "filesystem",
+    "chunking"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@lyrify/znl": "^0.6.2",
+    "diff": "^8.0.2"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

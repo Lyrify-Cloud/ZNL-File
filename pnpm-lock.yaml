@@ -1,0 +1,55 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    dependencies:
+      '@lyrify/znl':
+        specifier: ^0.6.2
+        version: 0.6.2
+      diff:
+        specifier: ^8.0.2
+        version: 8.0.4
+
+packages:
+
+  '@lyrify/znl@0.6.2':
+    resolution: {integrity: sha512-rcO+PPB9xPA/IhWfV4tAk4yXmrzrp/6YlVEiHhghZnkPrR1gZqKJ2iDE59R8yzrGXJ4alg4AyaLybixuPdCkTA==}
+    engines: {node: '>=18'}
+
+  cmake-ts@1.0.2:
+    resolution: {integrity: sha512-5l++JHE7MxFuyV/OwJf3ek7ZZN1aGPFPM5oUz6AnK5inQAPe4TFXRMz5sA2qg2FRgByPWdqO+gSfIPo8GzoKNQ==}
+    hasBin: true
+
+  diff@8.0.4:
+    resolution: {integrity: sha512-DPi0FmjiSU5EvQV0++GFDOJ9ASQUVFh5kD+OzOnYdi7n3Wpm9hWWGfB/O2blfHcMVTL5WkQXSnRiK9makhrcnw==}
+    engines: {node: '>=0.3.1'}
+
+  node-addon-api@8.7.0:
+    resolution: {integrity: sha512-9MdFxmkKaOYVTV+XVRG8ArDwwQ77XIgIPyKASB1k3JPq3M8fGQQQE3YpMOrKm6g//Ktx8ivZr8xo1Qmtqub+GA==}
+    engines: {node: ^18 || ^20 || >= 21}
+
+  zeromq@6.5.0:
+    resolution: {integrity: sha512-vWOrt19lvcXTxu5tiHXfEGQuldSlU+qZn2TT+4EbRQzaciWGwNZ99QQTolQOmcwVgZLodv+1QfC6UZs2PX/6pQ==}
+    engines: {node: '>= 12'}
+
+snapshots:
+
+  '@lyrify/znl@0.6.2':
+    dependencies:
+      zeromq: 6.5.0
+
+  cmake-ts@1.0.2: {}
+
+  diff@8.0.4: {}
+
+  node-addon-api@8.7.0: {}
+
+  zeromq@6.5.0:
+    dependencies:
+      cmake-ts: 1.0.2
+      node-addon-api: 8.7.0
