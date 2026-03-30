@@ -49,6 +49,7 @@ async function run() {
 
   await slave.fs.enable({
     root: "./examples/storage",
+    logChunks: true,
   });
 
   console.log("slave ready: core-001");
@@ -170,15 +171,14 @@ run().catch((error) => {
 
 ## 测试
 
-### 注入测试（命名空间）
+### 集成测试（真实 Master/Slave）
 ```/dev/null/test.txt#L1-L1
 pnpm test
 ```
 
-### 集成测试（真实 Master/Slave）
-```/dev/null/test-integration.txt#L1-L1
-pnpm test:integration
-```
+说明：
+- `pnpm test` 会顺序跑 **plain** 与 **encrypted** 两套流程
+- 测试目录为 `test/tmp/<scene>`，脚本结束后自动清理
 
 ---
 
@@ -188,3 +188,5 @@ pnpm test:integration
 - 传入路径必须在 `root` 范围内
 - Patch 使用 unified diff，Slave 端自动解析并应用
 - 大文件传输请使用 `upload` / `download`（已实现分片 + 断点续传）
+- `upload` / `download` 支持可选参数 `{ chunkSize, logChunks }`
+- `slave.fs.enable({ root, logChunks })` 可开启分片日志
