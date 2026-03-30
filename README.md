@@ -169,6 +169,147 @@ run().catch((error) => {
 
 ---
 
+## 协议构成（ZNL RPC）
+
+本插件在 ZNL 的 RPC 之上定义业务协议，所有请求与响应都使用 **多帧 payload**：
+- **第 1 帧**：JSON 元信息（包含 `op` 等字段）
+- **第 2+ 帧**：可选的二进制数据（例如文件分片 Buffer）
+
+### 通用字段（Meta）
+- `op`：操作类型（如 `file/list`、`file/get`、`file/patch` 等）
+- `path`：目标路径（相对 `root` 的路径）
+- `sessionId`：分片传输的会话 ID（上传/下载用）
+- `chunkId` / `totalChunks` / `offset` / `size`：分片序号与偏移信息
+
+### CRUD 协议
+- `file/list`：列目录
+- `file/get`：读取文件
+- `file/patch`：应用 unified diff
+- `file/delete`：删除文件/目录
+- `file/rename`：重命名/移动
+- `file/stat`：获取文件/目录元信息
+
+### 上传协议（Master → Slave）
+- `file/init`：启动上传会话（文件名、大小、分片大小）
+- `file/resume`：Slave 回传断点偏移
+- `file/chunk`：上传分片（附带 `chunkId` / `offset`）
+- `file/ack`：Slave 确认分片
+- `file/complete`：上传完成
+
+### 下载协议（Slave → Master）
+- `file/download_init`：启动下载会话
+- `file/download_chunk`：请求/返回分片
+- `file/download_complete`：下载完成
+
+### 帧级示例（示意）
+
+说明：以下仅展示 **payload 的帧结构**（ZNL 的 request/response 外层已省略）。
+
+#### list
+请求：
+```/dev/null/protocol-list-request.txt#L1-L4
+[
+  {"op":"file/list","path":"."}
+]
+```
+响应：
+```/dev/null/protocol-list-response.txt#L1-L5
+[
+  {"op":"file/list","ok":true,"entries":[{"name":"a.txt","type":"file","size":12,"mtime":1700000000000}]}
+]
+```
+
+#### get
+请求：
+```/dev/null/protocol-get-request.txt#L1-L4
+[
+  {"op":"file/get","path":"kuke.json"}
+]
+```
+响应（单帧文本/Buffer）：
+```/dev/null/protocol-get-response.txt#L1-L5
+[
+  {"op":"file/get","ok":true,"path":"kuke.json","size":27},
+  "<Buffer ...>"
+]
+```
+
+#### patch
+请求：
+```/dev/null/protocol-patch-request.txt#L1-L7
+[
+  {"op":"file/patch","path":"kuke.json","patch":"@@ -1,3 +1,3 @@\n-  \"name\": \"restaurant\"\n+  \"name\": \"aura\"\n"}
+]
+```
+响应：
+```/dev/null/protocol-patch-response.txt#L1-L4
+[
+  {"op":"file/patch","ok":true,"path":"kuke.json","applied":true}
+]
+```
+
+#### upload（分片）
+初始化请求：
+```/dev/null/protocol-upload-init.txt#L1-L6
+[
+  {"op":"file/init","sessionId":"s1","path":"upload.txt","fileSize":10485760,"chunkSize":5242880}
+]
+```
+断点响应：
+```/dev/null/protocol-upload-resume.txt#L1-L5
+[
+  {"op":"file/resume","sessionId":"s1","path":"upload.txt","offset":0,"chunkSize":5242880}
+]
+```
+分片请求（含数据帧）：
+```/dev/null/protocol-upload-chunk.txt#L1-L7
+[
+  {"op":"file/chunk","sessionId":"s1","path":"upload.txt","chunkId":0,"offset":0,"size":5242880},
+  "<Buffer ...>"
+]
+```
+ACK 响应：
+```/dev/null/protocol-upload-ack.txt#L1-L6
+[
+  {"op":"file/ack","sessionId":"s1","path":"upload.txt","chunkId":0,"offset":5242880,"size":5242880}
+]
+```
+完成请求：
+```/dev/null/protocol-upload-complete.txt#L1-L6
+[
+  {"op":"file/complete","sessionId":"s1","path":"upload.txt","fileSize":10485760,"totalChunks":2}
+]
+```
+
+#### download（分片）
+初始化请求：
+```/dev/null/protocol-download-init.txt#L1-L6
+[
+  {"op":"file/download_init","sessionId":"d1","path":"upload.txt","chunkSize":5242880,"offset":0}
+]
+```
+分片请求：
+```/dev/null/protocol-download-chunk-req.txt#L1-L6
+[
+  {"op":"file/download_chunk","sessionId":"d1","path":"upload.txt","chunkId":0,"offset":0,"chunkSize":5242880}
+]
+```
+分片响应（含数据帧）：
+```/dev/null/protocol-download-chunk-res.txt#L1-L7
+[
+  {"op":"file/download_chunk","sessionId":"d1","path":"upload.txt","chunkId":0,"offset":0,"size":5242880},
+  "<Buffer ...>"
+]
+```
+完成请求：
+```/dev/null/protocol-download-complete.txt#L1-L6
+[
+  {"op":"file/download_complete","sessionId":"d1","path":"upload.txt","fileSize":10485760,"totalChunks":2}
+]
+```
+
+> 以上协议均通过 ZNL 的 RPC 调用完成，确保每一步都有响应与超时控制。
+
 ## 测试
 
 ### 集成测试（真实 Master/Slave）
