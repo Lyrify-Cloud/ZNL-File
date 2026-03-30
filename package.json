@@ -1,6 +1,6 @@
 {
   "name": "@lyrify/znl-plugin-fs",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "ZNL file management plugin with chunked transfer, CRUD, and patch support",
   "type": "module",
   "main": "./index.js",
@@ -28,6 +28,14 @@
     "chunking"
   ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Lyrify-Cloud/ZNL-File.git"
+  },
+  "homepage": "https://github.com/Lyrify-Cloud/ZNL-File#readme",
+  "bugs": {
+    "url": "https://github.com/Lyrify-Cloud/ZNL-File/issues"
+  },
   "dependencies": {
     "@lyrify/znl": "^0.6.2",
     "diff": "^8.0.2"

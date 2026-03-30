@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.1.3
+- 集成测试新增 encrypted 场景，与 plain 顺序执行
+- 测试清理调整为脚本结束后统一删除 `test/tmp`
+- README 增加 logChunks 说明与测试说明更新
+- package.json 补充仓库与主页信息
+
 ## v0.1.2
 - 默认分片大小调整为 5MB
 - 集成测试新增 20MB 大文件上传/下载与 hash 校验
